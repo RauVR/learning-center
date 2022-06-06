@@ -2,10 +2,10 @@
 
 <script>
 import { TutorialsApiService } from "../services/tutorials-api.service";
+import {FilterMatchMode} from "primevue/api";
 
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "tutorials",
+  name: "tutorial-list",
   data() {
     return {
       tutorials: [],
@@ -17,14 +17,43 @@ export default {
       filters: {},
       submitted: false,
       statuses: [
-        { label: "Published", value: true },
-        { label: "Unpublished", value: false },
+        { label: "Published", value: "published" },
+        { label: "Unpublished", value: "unpublished" },
       ],
       tutorialsService: new TutorialsApiService(),
     };
   },
 
+  created() {
+    this.tutorialsService = new TutorialsApiService();
+    this.tutorialsService.getAll().then((response) => {
+      this.tutorials = response.data;
+      console.log(this.tutorials);
+      this.tutorials.forEach((tutorial) =>
+        this.getDisplayableTutorial(tutorial)
+      );
+      console.log(this.tutorials);
+    });
+    this.initFilters()
+  },
+
   methods: {
+
+    getDisplayableTutorial(tutorial) {
+      tutorial.status = tutorial.published
+        ? this.statuses[0].label
+        : this.statuses[1].label;
+      return tutorial;
+    },
+
+    getStorableTutorial(displayableTutorial) {
+      return {
+        id: displayableTutorial.id,
+        title: displayableTutorial.title,
+        description: displayableTutorial.description,
+        published: displayableTutorial.status.label === "Published",
+      };
+    },
 
     openNew() {
       this.tutorial = {};
@@ -51,7 +80,8 @@ export default {
           this.tutorialsService
             .update(this.tutorial.id, this.tutorial)
             .then((response) => {
-              this.tutorials[this.findIndexById(this.tutorial.id)] = this.tutorial;
+              this.tutorials[this.findIndexById(response.data.id)] =
+                this.getDisplayableTutorial(response.data);
               this.$toast.add({
                 //el $toast es el mensajito que aparece automaticamente y solito se desvanece
                 severity: "success",
@@ -65,7 +95,7 @@ export default {
         else {
           this.tutorial.id=0;
           this.tutorialsService.create(this.tutorial).then((response)=>{
-            this.tutorial.id=response.data.id;
+            this.tutorial = this.getDisplayableTutorial(response.data);
             this.tutorials.push(this.tutorial);
 
             this.$toast.add({
@@ -107,8 +137,35 @@ export default {
           life: 4000,
         });
         console.log(response);
-      })
-    }
+      });
+    },
+
+    exportToCsv() {
+      this.$refs.dt.exportToCsv();
+    },
+
+    confirmDeleteSelected() {
+      this.deleteTutorialsDialog = true;
+    },
+
+    deleteSelectedTutorials() {
+      this.selectedTutorials.forEach((tutorial) => {
+        this.tutorialsService
+            .delete(tutorial.id).then((response) => {
+          this.tutorials = this.tutorials.filter(
+              (t) => t.id !== this.tutorial.id
+          );
+          console.log(response);
+        });
+      });
+      this.deleteTutorialsDialog = false;
+    },
+
+    initFilters() {
+      this.filter = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      };
+    },
   },
 };
 </script>
