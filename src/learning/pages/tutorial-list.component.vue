@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <div></div>
+</template>
 
 <script>
 import { TutorialsApiService } from "../services/tutorials-api.service";
@@ -20,7 +22,7 @@ export default {
         { label: "Published", value: "published" },
         { label: "Unpublished", value: "unpublished" },
       ],
-      tutorialsService: new TutorialsApiService(),
+      tutorialsService: null,
     };
   },
 

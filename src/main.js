@@ -7,7 +7,7 @@ import PrimeVue from "primevue/config";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import "primevue/resources/themes/md-light-indigo/theme.css";
-import "primeflex/primeflex.css"
+import "primeflex/primeflex.css";
 import DataTable from "primevue/datatable";
 import Toolbar from "primevue/toolbar";
 import Column from "primevue/column";
@@ -26,7 +26,7 @@ import Card from "primevue/card";
 const app = createApp(App);
 
 app.use(router);
-app.use(PrimeVue,{ripple:true});
+app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 
 //PrimeVue components

@@ -2,7 +2,7 @@ import http from "../../core/services/http-common";
 
 export class TutorialsApiService {
   getAll() {
-    http.get("/tutorials");
+    return http.get("/tutorials");
   }
 
   getById(id) {
@@ -13,7 +13,7 @@ export class TutorialsApiService {
     return http.post("/tutorials",data);
   }
 
-  update(id,data){
+  update(id, data) {
     return http.put(`/tutorials/${id}`,data);
   }
 
